@@ -156,7 +156,6 @@ func (d *AliyundriveOpen) getAudioPlayLink(ctx context.Context, file model.Obj) 
 		}
 		return nil, err
 	}
-	log.Infof("[aliyundrive_open] get_audio_play_info file_id=%s drive_id=%s resp=%+v", file.GetID(), d.DriveId, resp)
 	url := ""
 	for _, item := range resp.TemplateList {
 		if item.URL == "" {
