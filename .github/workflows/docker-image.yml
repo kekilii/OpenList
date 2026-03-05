@@ -1,0 +1,30 @@
+name: Sync Upstream
+
+on:
+  schedule:
+    - cron: '0 0 * * *'          # 每天 UTC 00:00 执行（北京时间早8点）
+  workflow_dispatch:             # 允许手动触发
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout your fork
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0           # 拉取完整历史，避免浅克隆问题
+
+      - name: Set up upstream
+        run: |
+          git remote add upstream https://github.com/OpenListTeam/OpenList.git
+          git fetch upstream
+
+      - name: Merge upstream changes
+        run: |
+          git checkout main                  # 改成你的默认分支，如 main
+          git merge upstream/main --allow-unrelated-histories --no-edit || true
+          # 如果有冲突，这里会失败，你可以加通知步骤
+
+      - name: Push changes if any
+        run: |
+          git push origin main
