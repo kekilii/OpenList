@@ -2,6 +2,7 @@ package handles
 
 import (
 	"fmt"
+	"net/url"
 	stdpath "path"
 	"strings"
 	"time"
@@ -318,17 +319,33 @@ func FsGet(c *gin.Context, req *FsGetReq, user *model.User) {
 			common.ErrorResp(c, err, 500)
 			return
 		}
+		isAudio := utils.GetFileType(obj.GetName()) == conf.AUDIO
+		linkType := ""
+		if isAudio {
+			linkType = "play"
+		}
 		if storage.Config().MustProxy() || storage.GetStorage().WebProxy {
 			rawURL = common.GenerateDownProxyURL(storage.GetStorage(), reqPath)
 			if rawURL == "" {
 				query := ""
-				if isEncrypt(meta, reqPath) || setting.GetBool(conf.SignAll) {
-					query = "?sign=" + sign.Sign(reqPath)
+				if isEncrypt(meta, reqPath) || setting.GetBool(conf.SignAll) || linkType != "" {
+					params := url.Values{}
+					if isEncrypt(meta, reqPath) || setting.GetBool(conf.SignAll) {
+						params.Set("sign", sign.Sign(reqPath))
+					}
+					if linkType != "" {
+						params.Set("type", linkType)
+					}
+					query = "?" + params.Encode()
 				}
 				rawURL = fmt.Sprintf("%s/p%s%s",
 					common.GetApiUrl(c),
 					utils.EncodePath(reqPath, true),
 					query)
+			} else if linkType != "" {
+				if injected, err := utils.InjectQuery(rawURL, url.Values{"type": {linkType}}); err == nil {
+					rawURL = injected
+				}
 			}
 		} else {
 			// file have raw url
@@ -339,6 +356,7 @@ func FsGet(c *gin.Context, req *FsGetReq, user *model.User) {
 				link, _, err := fs.Link(c.Request.Context(), reqPath, model.LinkArgs{
 					IP:       c.ClientIP(),
 					Header:   c.Request.Header,
+					Type:     linkType,
 					Redirect: true,
 				})
 				if err != nil {

@@ -83,3 +83,14 @@ type MoveOrCopyResp struct {
 	DriveID string `json:"drive_id"`
 	FileID  string `json:"file_id"`
 }
+
+type AudioPlayInfoResp struct {
+	TemplateList []AudioPlayTemplate `json:"template_list"`
+}
+
+type AudioPlayTemplate struct {
+	Status     string `json:"status"`
+	URL        string `json:"url"`
+	Type       string `json:"type"`
+	TemplateID string `json:"template_id"`
+}
