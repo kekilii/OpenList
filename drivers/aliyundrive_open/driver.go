@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/OpenListTeam/OpenList/v4/drivers/base"
+	"github.com/OpenListTeam/OpenList/v4/internal/conf"
 	"github.com/OpenListTeam/OpenList/v4/internal/driver"
 	"github.com/OpenListTeam/OpenList/v4/internal/errs"
 	"github.com/OpenListTeam/OpenList/v4/internal/model"
@@ -101,6 +102,11 @@ func (d *AliyundriveOpen) List(ctx context.Context, dir model.Obj, args model.Li
 }
 
 func (d *AliyundriveOpen) Link(ctx context.Context, file model.Obj, args model.LinkArgs) (*model.Link, error) {
+	if args.Type == "play" && utils.GetFileType(file.GetName()) == conf.AUDIO {
+		if link, err := d.getAudioPlayLink(ctx, file); err == nil && link != nil && link.URL != "" {
+			return link, nil
+		}
+	}
 	res, err := d.request(ctx, limiterLink, "/adrive/v1.0/openFile/getDownloadUrl", http.MethodPost, func(req *resty.Request) {
 		req.SetBody(base.Json{
 			"drive_id":   d.DriveId,
@@ -123,6 +129,54 @@ func (d *AliyundriveOpen) Link(ctx context.Context, file model.Obj, args model.L
 		URL:        url,
 		Expiration: &exp,
 	}, nil
+}
+
+func (d *AliyundriveOpen) getAudioPlayLink(ctx context.Context, file model.Obj) (*model.Link, error) {
+	if d.getAccessToken() == "" {
+		if err := d.refreshToken(ctx); err != nil {
+			return nil, err
+		}
+	}
+	var resp AudioPlayInfoResp
+	data := base.Json{
+		"drive_id": d.DriveId,
+		"file_id":  file.GetID(),
+	}
+	req := base.RestyClient.R().
+		SetContext(ctx).
+		SetHeader("Authorization", "Bearer "+d.getAccessToken()).
+		SetHeader("Content-Type", "application/json").
+		SetBody(data).
+		SetResult(&resp)
+
+	res, err := req.Post("https://api.aliyundrive.com/adrive/v2/databox/get_audio_play_info")
+	if err != nil {
+		if res != nil {
+			log.Errorf("[aliyundrive_open] get_audio_play_info error: %s", res.String())
+		}
+		return nil, err
+	}
+	log.Infof("[aliyundrive_open] get_audio_play_info file_id=%s drive_id=%s resp=%+v", file.GetID(), d.DriveId, resp)
+	url := ""
+	for _, item := range resp.TemplateList {
+		if item.URL == "" {
+			continue
+		}
+		if item.Status != "" && item.Status != "finished" {
+			continue
+		}
+		if item.Type == "raw" {
+			url = item.URL
+			break
+		}
+		if url == "" {
+			url = item.URL
+		}
+	}
+	if url == "" {
+		return nil, errors.New("audio play url not found")
+	}
+	return &model.Link{URL: url}, nil
 }
 
 func (d *AliyundriveOpen) MakeDir(ctx context.Context, parentDir model.Obj, dirName string) (model.Obj, error) {
