@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/OpenListTeam/OpenList/v4/drivers/base"
@@ -102,7 +103,7 @@ func (d *AliyundriveOpen) List(ctx context.Context, dir model.Obj, args model.Li
 }
 
 func (d *AliyundriveOpen) Link(ctx context.Context, file model.Obj, args model.LinkArgs) (*model.Link, error) {
-	if args.Type == "play" && utils.GetFileType(file.GetName()) == conf.AUDIO {
+	if shouldUseAudioPlayLink(file, args) {
 		if link, err := d.getAudioPlayLink(ctx, file); err == nil && link != nil && link.URL != "" {
 			return link, nil
 		}
@@ -129,6 +130,22 @@ func (d *AliyundriveOpen) Link(ctx context.Context, file model.Obj, args model.L
 		URL:        url,
 		Expiration: &exp,
 	}, nil
+}
+
+func shouldUseAudioPlayLink(file model.Obj, args model.LinkArgs) bool {
+	if utils.GetFileType(file.GetName()) != conf.AUDIO {
+		return false
+	}
+	if args.Type == "play" {
+		return true
+	}
+	if args.Type != "" {
+		return false
+	}
+	if strings.HasPrefix(strings.ToLower(strings.TrimSpace(args.Header.Get("Range"))), "bytes=") {
+		return true
+	}
+	return strings.Contains(strings.ToLower(args.Header.Get("Accept")), "audio/")
 }
 
 func (d *AliyundriveOpen) getAudioPlayLink(ctx context.Context, file model.Obj) (*model.Link, error) {
