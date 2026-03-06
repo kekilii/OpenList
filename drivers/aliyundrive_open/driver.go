@@ -175,7 +175,8 @@ func (d *AliyundriveOpen) getAudioPlayLink(ctx context.Context, file model.Obj) 
 	if url == "" {
 		return nil, errors.New("audio play url not found")
 	}
-	return &model.Link{URL: url}, nil
+	exp := time.Minute
+	return &model.Link{URL: url, Expiration: &exp}, nil
 }
 
 func (d *AliyundriveOpen) MakeDir(ctx context.Context, parentDir model.Obj, dirName string) (model.Obj, error) {
