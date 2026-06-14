@@ -116,9 +116,10 @@ Thank you for your support and understanding of the OpenList project.
 
 ## Document
 
-- 📘 [Global Site](https://doc.oplist.org)
-- 📚 [Backup Site](https://doc.openlist.team)
-- 🌏 [CN Site](https://doc.oplist.org.cn)
+- 📘 [Docs](https://doc.oplist.org)
+- 🌏 [CN Mirror](https://doc.oplist.org.cn)
+- ⚖️ [Terms of Use](https://doc.oplist.org/terms)
+- 🔒 [Privacy Policy](https://doc.oplist.org/privacy)
 
 ## Demo
 
@@ -132,6 +133,14 @@ Please refer to [*Discussions*](https://github.com/OpenListTeam/OpenList/discuss
 ## Sponsor
 
 [![VPS.Town](https://vps.town/static/images/sponsor.png)](https://vps.town "VPS.Town - Trust, Effortlessly. Your Cloud, Reimagined.")
+
+## Donors
+
+Thanks to the following donors for their generous support:
+
+- [HisAtri](https://github.com/HisAtri)
+- 爱发电用户_7jTh
+- suka
 
 ## License
 
@@ -162,3 +171,4 @@ We sincerely thank the author [Xhofe](https://github.com/Xhofe) of the original 
 Thanks goes to these wonderful people:
 
 [![Contributors](https://contrib.rocks/image?repo=OpenListTeam/OpenList)](https://github.com/OpenListTeam/OpenList/graphs/contributors)
+

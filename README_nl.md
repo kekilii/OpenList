@@ -116,9 +116,10 @@ Dank u voor uw ondersteuning en begrip
 
 ## Documentatie
 
-- 📘 [Global Site](https://doc.oplist.org)
-- 📚 [Backup Site](https://doc.openlist.team)
-- 🌏 [CN Site](https://doc.oplist.org.cn)
+- 📘 [Documentatie](https://doc.oplist.org)
+- 🌏 [CN Mirror](https://doc.oplist.org.cn)
+- ⚖️ [Gebruiksvoorwaarden](https://doc.oplist.org/terms)
+- 🔒 [Privacybeleid](https://doc.oplist.org/privacy)
 
 ## Demo
 
@@ -132,6 +133,14 @@ Stel algemene vragen in [*Discussions*](https://github.com/OpenListTeam/OpenList
 ## Sponsoren
 
 [![VPS.Town](https://vps.town/static/images/sponsor.png)](https://vps.town "VPS.Town - Trust, Effortlessly. Your Cloud, Reimagined.")
+
+## Donatie Bijdragers
+
+Dank aan de volgende donateurs voor hun steun:
+
+- [HisAtri](https://github.com/HisAtri)
+- 爱发电用户_7jTh
+- suka
 
 ## Licentie
 
